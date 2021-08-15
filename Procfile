@@ -1,0 +1,1 @@
+web: gunicorn shakh.wsgi --log-file -
