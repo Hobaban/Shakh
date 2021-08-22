@@ -22,8 +22,12 @@ sms = {
     'sms_api_key': os.getenv('sms_api_key'),
     'sms_timeout': os.getenv('sms_timeout'),
     'sms_send_url': os.getenv('sms_send_url'),
+    'sms_verification_url': os.getenv('sms_verification_url'),
     'sms_line_no': os.getenv('sms_line_no'),
+    'user_api_key': os.getenv('user_api_key'),
+    'secret_key': os.getenv('secret_key'),
 }
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

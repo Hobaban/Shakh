@@ -33,10 +33,11 @@ def send_otp_code_view(request):
     phone = request.data["phone"]
     otp_code = generate_otp_code()
     if not is_code_sent(phone):
-        cache.set(phone, otp_code, timeout=60)
+        cache.set(phone, otp_code, timeout=5)
         print(otp_code)
-        # SMS().send_activation_code(phone, otp_code)
-        return Response({'message': "code sent"}, status=status.HTTP_200_OK)
+        if SMS().send_activation_code(phone, otp_code):
+            return Response({'message': "code sent"}, status=status.HTTP_200_OK)
+        return Response({'message': "code not sent"}, status=status.HTTP_409_CONFLICT)
     else:
         print("errorrrr")
     return Response({'message': "code is still valid"}, status=status.HTTP_409_CONFLICT)
@@ -65,10 +66,11 @@ def hello_world(request):
 @permission_classes((AllowAny,))
 def phone_registration(request):
     phone = request.data['phone']
+    password = request.data['password']
     otp_code = request.data['otp_code']
     is_object_exist_409(User, phone=phone)
     if check_otp_code(phone, otp_code):
-        models.User.objects.create_user(username=phone, phone=phone, password="123456789",
+        models.User.objects.create_user(username=phone, phone=phone, password=password,
                                         email="fake@" + phone + ".com")
         return Response({'message': "registered"}, status=status.HTTP_201_CREATED)
     return Response({'message': "wrong code"}, status=status.HTTP_403_FORBIDDEN)
