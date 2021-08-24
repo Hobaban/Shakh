@@ -33,7 +33,7 @@ def send_otp_code_view(request):
     phone = request.data["phone"]
     otp_code = generate_otp_code()
     if not is_code_sent(phone):
-        cache.set(phone, otp_code, timeout=5)
+        cache.set(phone, otp_code, timeout=1500)
         print(otp_code)
         if SMS().send_activation_code(phone, otp_code):
             return Response({'message': "code sent"}, status=status.HTTP_200_OK)
@@ -45,12 +45,12 @@ def send_otp_code_view(request):
 
 @api_view(["POST"])
 @permission_classes((AllowAny,))
-def otp_login_view(request):
+def phone_login_view(request):
     LoginSerializer(data=request.data).is_valid()
     phone = str(request.data['phone']).strip()
-    otp_code = str(request.data['otp_code']).strip()
+    password = str(request.data['password']).strip()
     user = get_object_or_404(models.User, phone=phone)
-    if cache.get(str(user.phone)) == otp_code:
+    if user.check_password(password):
         tokens = get_tokens(user)
         return Response({'tokens': tokens}, status=status.HTTP_201_CREATED)
     return Response({'tokens': "not valid"}, status=status.HTTP_401_UNAUTHORIZED)

@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny
 from account import views
 
 urlpatterns = [
-    url(r'^otp_login/$', views.otp_login_view, name='otp_login'),
+    url(r'^phone_login/$', views.phone_login_view, name='phone_login'),
     url(r'^email_login/$', views.email_login_view, name='login'),
     url(r'^send_code/$', views.send_otp_code_view, name='send_code'),
     url(r'^phone_register/$', views.phone_registration, name='phone_register'),
