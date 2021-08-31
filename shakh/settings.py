@@ -1,3 +1,5 @@
+from util.log import *
+
 """
 Django settings for shakh project.
 
