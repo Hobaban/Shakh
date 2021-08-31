@@ -45,4 +45,5 @@ class SMS(object):
                 return True
             return False
         except requests.exceptions as e:
+            logging.error(e)
             return e

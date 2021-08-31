@@ -1,3 +1,5 @@
+import logging
+
 from account import models
 from account.models import User
 from rest_framework import status
@@ -34,7 +36,7 @@ def send_otp_code_view(request):
     otp_code = generate_otp_code()
     if not is_code_sent(phone):
         cache.set(phone, otp_code, timeout=1500)
-        print(otp_code)
+        logging.info(otp_code)
         if SMS().send_activation_code(phone, otp_code):
             return Response({'message': "code sent"}, status=status.HTTP_200_OK)
         return Response({'message': "code not sent"}, status=status.HTTP_409_CONFLICT)
