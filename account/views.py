@@ -29,7 +29,7 @@ def email_login_view(request):
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def send_otp_code_view(request):
-    # PhoneValidationSerializer(data=request.data).is_valid()
+    PhoneValidationSerializer(data=request.data).is_valid()
     phone = request.data["phone"]
     otp_code = generate_otp_code()
     if not is_code_sent(phone):
@@ -39,8 +39,7 @@ def send_otp_code_view(request):
             return Response({'message': "code sent"}, status=status.HTTP_200_OK)
         return Response({'message': "code not sent"}, status=status.HTTP_409_CONFLICT)
     else:
-        print("errorrrr")
-    return Response({'message': "code is still valid"}, status=status.HTTP_409_CONFLICT)
+        return Response({'message': "code is still valid"}, status=status.HTTP_409_CONFLICT)
 
 
 @api_view(["POST"])

@@ -41,7 +41,7 @@ class SMS(object):
                 'x-sms-ir-secure-token': token
             }
             response = requests.request("POST", url, headers=headers, data=str(payload))
-            if response.json().get("IsSuccessful") == "true":
+            if response.json().get("IsSuccessful"):
                 return True
             return False
         except requests.exceptions as e:
