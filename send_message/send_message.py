@@ -1,4 +1,3 @@
-import json
 import logging
 from kavenegar import *
 from shakh.settings import sms
@@ -13,7 +12,8 @@ sms_timeout = int(sms['sms_timeout'])
 
 
 class SMS(object):
-    def _get_token_from_api(self):
+    @staticmethod
+    def _get_token_from_api():
         try:
             data = {"UserApiKey": user_api_key,
                     "SecretKey": secret_key}
@@ -47,3 +47,7 @@ class SMS(object):
         except requests.exceptions as e:
             logging.error(e)
             return e
+
+    def send_forget_password(self, phone, phone1, otp_code):
+        # TO-DO
+        pass

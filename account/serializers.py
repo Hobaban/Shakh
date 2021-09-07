@@ -5,8 +5,22 @@ from account import models
 from account.models import User
 
 
+class PhoneRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ('phone', 'otp_code', 'password')
+
+
 class PhoneValidationSerializer(serializers.ModelSerializer):
     class Meta:
+        model = models.User
+        fields = ('phone',)
+
+
+class ForgePasswordSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        phone = serializers.CharField(required=True)
         model = models.User
         fields = ('phone',)
 
