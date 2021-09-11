@@ -23,6 +23,7 @@ from shakh import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('account.urls')),
+    path('api/', include('product.urls')),
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 ]
