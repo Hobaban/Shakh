@@ -3,7 +3,6 @@ import logging
 from account import models
 from account.models import User
 from rest_framework import status
-from django.core.cache import cache
 from account.util import generate_otp_code, check_otp_code, is_code_sent, set_cache_multiple_value
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
