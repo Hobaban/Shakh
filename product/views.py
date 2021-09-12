@@ -6,8 +6,7 @@ from rest_framework.views import APIView
 
 from product import models
 from product.repositories import get_product, get_products
-from product.serializers import ProductSerializer
-from util import permissions
+from product.serializers import ProductSerializer, ProductImageSerializer
 from util.query import is_object_exist_409
 
 
@@ -49,10 +48,26 @@ class ProductCreateListView(APIView):
         product.name = name
         product.save()
         serializer = ProductSerializer(product)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
     def get(request):
         products = get_products()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ProductImage(APIView):
+    permission_classes = [AllowAny]
+
+    @staticmethod
+    def post(request):
+        product_id = request.data['product_id']
+        file = request.data['image']
+        product_image = models.ProductImage()
+        product_image.product = get_object_or_404(models.Product, id=product_id)
+        product_image.image = file
+        product_image.image.name = file.name
+        product_image.save()
+        serializer = ProductImageSerializer(product_image)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
