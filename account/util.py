@@ -5,16 +5,18 @@ import secrets
 from django.core.cache import cache
 from django.utils.timezone import utc
 
+from util.redis_cache import get_cache_multiple_value
 
-def check_otp_code(phone: int, otp_code: int) -> bool:
-    code = cache.get(str(phone))
+
+def check_otp_code(phone: int, otp_code: int, custom_value="otp_code") -> bool:
+    code = get_cache_multiple_value(phone, custom_value)
     if code and code == str(otp_code):
         return True
     return False
 
 
-def is_code_sent(phone):
-    if cache.get(str(phone)):
+def is_code_sent(phone, value_name: str):
+    if get_cache_multiple_value(phone, value_name):
         return True
     return False
 
@@ -40,15 +42,14 @@ def get_cache_value(key, custom_value_name):
 
 def set_cache_multiple_value(key, value, custom_value_name, ttl=60):
     json_value = cache.get(key)
-
     try:
         exist_json = json.loads(json_value)
-        dict_value = {custom_value_name: value}
+        dict_value = {custom_value_name: str(value)}
         dict_value.update(exist_json)
         json_data = json.dumps(dict_value)
-        __cache_status = cache.set(key, json_data, timeout=ttl)
+        __cache_status = cache.set(str(key), json_data, timeout=ttl)
         return __cache_status
-    except ValueError:
+    except:
         json_data = json.dumps({custom_value_name: str(value)})
-        __cache_status = cache.set(key, json_data, timeout=ttl)
+        __cache_status = cache.set(str(key), json_data, timeout=ttl)
         return __cache_status

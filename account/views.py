@@ -1,15 +1,17 @@
+import logging
+
 from account import models
 from account.models import User
 from rest_framework import status
-from django.core.cache import cache
-from account.util import generate_otp_code, check_otp_code, is_code_sent
+from account.util import generate_otp_code, check_otp_code, is_code_sent, set_cache_multiple_value
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from account.services.service import get_tokens
 from util.query import is_object_exist_409
 from rest_framework.decorators import api_view, permission_classes
-from account.serializers import LoginSerializer, EmailLoginSerializer, PhoneValidationSerializer, UserSerializer
+from account.serializers import LoginSerializer, EmailLoginSerializer, PhoneValidationSerializer, UserSerializer, \
+    ForgePasswordSerializer
 from send_message.send_message import SMS
 
 
@@ -29,27 +31,30 @@ def email_login_view(request):
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def send_otp_code_view(request):
-    # PhoneValidationSerializer(data=request.data).is_valid()
+    PhoneValidationSerializer(data=request.data).is_valid()
     phone = request.data["phone"]
     otp_code = generate_otp_code()
-    if not is_code_sent(phone):
-        cache.set(phone, otp_code, timeout=60)
-        print(otp_code)
-        # SMS().send_activation_code(phone, otp_code)
-        return Response({'message': "code sent"}, status=status.HTTP_200_OK)
+    if not is_code_sent(phone, 'otp_code'):
+        # cache.set(phone, otp_code, timeout=1500)
+        set_cache_multiple_value(key=phone, value=otp_code,
+                                 custom_value_name='otp_code',
+                                 ttl=1500)
+        logging.info(otp_code)
+        if SMS().send_activation_code(phone, otp_code):
+            return Response({'message': "code sent"}, status=status.HTTP_200_OK)
+        return Response({'message': "code not sent"}, status=status.HTTP_409_CONFLICT)
     else:
-        print("errorrrr")
-    return Response({'message': "code is still valid"}, status=status.HTTP_409_CONFLICT)
+        return Response({'message': "code is still valid"}, status=status.HTTP_409_CONFLICT)
 
 
 @api_view(["POST"])
 @permission_classes((AllowAny,))
-def otp_login_view(request):
+def phone_login_view(request):
     LoginSerializer(data=request.data).is_valid()
     phone = str(request.data['phone']).strip()
-    otp_code = str(request.data['otp_code']).strip()
+    password = str(request.data['password']).strip()
     user = get_object_or_404(models.User, phone=phone)
-    if cache.get(str(user.phone)) == otp_code:
+    if user.check_password(password):
         tokens = get_tokens(user)
         return Response({'tokens': tokens}, status=status.HTTP_201_CREATED)
     return Response({'tokens': "not valid"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -65,10 +70,11 @@ def hello_world(request):
 @permission_classes((AllowAny,))
 def phone_registration(request):
     phone = request.data['phone']
+    password = request.data['password']
     otp_code = request.data['otp_code']
     is_object_exist_409(User, phone=phone)
     if check_otp_code(phone, otp_code):
-        models.User.objects.create_user(username=phone, phone=phone, password="123456789",
+        models.User.objects.create_user(username=phone, phone=phone, password=password,
                                         email="fake@" + phone + ".com")
         return Response({'message': "registered"}, status=status.HTTP_201_CREATED)
     return Response({'message': "wrong code"}, status=status.HTTP_403_FORBIDDEN)
@@ -93,12 +99,32 @@ def get_current_user(request):
     return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(["POST"])
+@permission_classes((AllowAny,))
 def forget_password(request):
-    email = request["email"]
-    user = get_object_or_404(User, email=email)
+    serializer = ForgePasswordSerializer(data=request.data)
+    serializer.is_valid()
+    phone = request.data["phone"]
+    user = get_object_or_404(User, phone=phone)
     otp_code = generate_otp_code()
-    if not is_code_sent(email):
-        cache.set(email, otp_code, timeout=60)
-        if SMS().send_forget_password(user.phone, user.phone, otp_code):
+    if not is_code_sent(phone, 'forget_code'):
+        set_cache_multiple_value(key=phone, value=otp_code,
+                                 custom_value_name='forget_code',
+                                 ttl=1000)
+        if SMS().send_activation_code(user.phone, otp_code):
             return Response({'message': "code sent"}, status=status.HTTP_200_OK)
     return Response({'message': "code is still valid"}, status=status.HTTP_409_CONFLICT)
+
+
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def change_password(request):
+    phone = request.data["phone"]
+    user = get_object_or_404(models.User, phone=phone)
+    forget_code = request.data["forget_code"]
+    password = request.data["password"]
+    if check_otp_code(phone, forget_code, custom_value='forget_code'):
+        user.set_password(password)
+        user.save()
+        return Response({'message': "password changed"}, status=status.HTTP_200_OK)
+    return Response({'message': "wrong code"}, status=status.HTTP_403_FORBIDDEN)
