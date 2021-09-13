@@ -3,10 +3,10 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from product import models
 from product.repositories import get_product, get_products
 from product.serializers import ProductSerializer, ProductImageSerializer
+from util.pagination import Paginator
 from util.query import is_object_exist_409
 
 
@@ -53,8 +53,10 @@ class ProductCreateListView(APIView):
     @staticmethod
     def get(request):
         products = get_products()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = Paginator()
+        context = paginator.paginate_queryset(products, request)
+        serializer = ProductSerializer(context, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class ProductImage(APIView):
