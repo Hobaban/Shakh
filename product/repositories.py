@@ -3,7 +3,7 @@ from django.http import Http404
 from product.models import Product, ProductImage
 
 
-def get_product(pk):
+def get_product(pk: int) -> Product:
     try:
         return Product.objects.get(pk=pk)
 
@@ -11,9 +11,9 @@ def get_product(pk):
         raise Http404
 
 
-def get_products():
+def get_products() -> [Product]:
     try:
-        return Product.objects.all()
+        return Product.objects.all().order_by('name')
     except Product.DoesNotExist:
         raise Http404
 
