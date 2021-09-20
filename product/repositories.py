@@ -1,8 +1,9 @@
 from django.http import Http404
 from rest_framework.generics import get_object_or_404
 
+from account.models import User
 from product import models
-from product.models import Product, ProductImage
+from product.models import Product, ProductImage, ReviewImage, Review
 
 
 def add_product_image(product_id, image):
@@ -63,3 +64,62 @@ def get_product_images(product_key):
     product = get_product(product_key)
     images = ProductImage.objects.filter(product=product)
     return images
+
+
+def create_review(title: str, rate: float, context: str, product_key: int, reviewer_key: int) -> Review:
+    try:
+        review = Review()
+        review.rate = rate
+        review.context = context
+        review.title = title
+        review.product = get_product(product_key)
+        review.reviewer = get_object_or_404(User, id=reviewer_key)
+        review.save()
+        return review
+    except Exception as e:
+        raise
+
+
+def update_review(pk: int, title: str, rate: float, context: str, product_key: int, reviewer_key: int) -> Review:
+    review = get_object_or_404(pk)
+    review.rate = rate
+    review.context = context
+    review.title = title
+    review.product = get_product(product_key)
+    review.reviewer = get_object_or_404(User, id=reviewer_key)
+    review.save()
+    return review
+
+
+def get_reviews() -> [Review]:
+    try:
+        return Review.objects.all().order_by('title')
+    except Review.DoesNotExist:
+        raise Http404
+
+
+def get_review(pk) -> Review:
+    try:
+        return Review.objects.get(pk=pk)
+
+    except Review.DoesNotExist:
+        raise Http404
+
+
+def delete_review(pk):
+    try:
+        review = get_review(pk)
+        review.delete()
+        review.save()
+        return True
+    except Exception as e:
+        raise e
+
+
+def add_review_image(review_id, image):
+    review_image = ReviewImage()
+    review_image.review = get_object_or_404(models.Review, id=review_id)
+    review_image.image = image
+    review_image.image.name = image.name
+    review_image.save()
+    return review_image
