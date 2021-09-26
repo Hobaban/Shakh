@@ -98,6 +98,11 @@ def get_reviews() -> [Review]:
         raise Http404
 
 
+def get_reviews_per_product(product_id):
+    product = get_object_or_404(Product, id=product_id)
+    return Review.objects.filter(product=product)
+
+
 def get_review(pk) -> Review:
     try:
         return Review.objects.get(pk=pk)

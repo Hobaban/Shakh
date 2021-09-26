@@ -4,7 +4,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from product import models
-from product.repositories import get_review, update_review, delete_review, get_reviews, create_review, add_review_image
+from product.repositories import get_review, update_review, delete_review, create_review, add_review_image, \
+    get_reviews_per_product
 from product.serializers import ReviewSerializer, ReviewImageSerializer
 from util.pagination import Paginator
 from util.query import is_object_exist_409
@@ -42,7 +43,8 @@ def remove_review_controller(request, pk):
 @api_view(["GET"])
 @permission_classes((AllowAny,))
 def get_reviews_controller(request):
-    reviews = get_reviews()
+    product_id = request.query_params.get('product_id')
+    reviews = get_reviews_per_product(product_id=product_id)
     paginator = Paginator()
     context = paginator.paginate_queryset(reviews, request)
     serializer = ReviewSerializer(context, many=True)
