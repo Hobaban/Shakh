@@ -27,8 +27,7 @@ class ReviewImageSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.HyperlinkedModelSerializer):
     review_images = ReviewImageSerializer(many=True, read_only=True)
     reviewer = UserSerializer()
-    product = ProductSerializer()
 
     class Meta:
         model = models.Review
-        fields = ('id', 'title', 'context', 'review_images', 'product', 'reviewer')
+        fields = ('id', 'rate', 'title', 'context', 'review_images', 'reviewer')
