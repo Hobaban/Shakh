@@ -55,7 +55,7 @@ def update_product(pk, name) -> Product:
 
 def get_products() -> [Product]:
     try:
-        return Product.objects.all().order_by('name')
+        return Product.objects.all().order_by('created_date')
     except Product.DoesNotExist:
         raise Http404
 
