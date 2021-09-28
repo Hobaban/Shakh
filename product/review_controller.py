@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from product import models
 from product.repositories import get_review, update_review, delete_review, create_review, add_review_image, \
-    get_reviews_per_product
+    get_reviews_per_product, is_product_reviewed
 from product.serializers import ReviewSerializer, ReviewImageSerializer
 from util.pagination import Paginator
 from util.query import is_object_exist_409
@@ -55,11 +55,10 @@ def get_reviews_controller(request):
 @permission_classes((AllowAny,))
 def add_review_controller(request):
     title = request.data["title"]
-    # change if someone duplicate to review
-    is_object_exist_409(models.Review, title=title)
     context = request.data["context"]
     product_key = request.data["product_key"]
     reviewer_key = request.data["reviewer_key"]
+    is_product_reviewed(product_id=product_key, reviewer_id=reviewer_key)
     rate = request.data["rate"]
     review = create_review(context=context, title=title, product_key=product_key, reviewer_key=reviewer_key, rate=rate)
     serializer = ReviewSerializer(review)

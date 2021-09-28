@@ -4,6 +4,7 @@ from rest_framework.generics import get_object_or_404
 from account.models import User
 from product import models
 from product.models import Product, ProductImage, ReviewImage, Review
+from util.exceptions import ObjectExistException
 
 
 def add_product_image(product_id, image):
@@ -100,6 +101,13 @@ def get_reviews() -> [Review]:
 def get_reviews_per_product(product_id):
     product = get_object_or_404(Product, id=product_id)
     return Review.objects.filter(product=product)
+
+
+def is_product_reviewed(reviewer_id, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reviewer = get_object_or_404(User, id=reviewer_id)
+    if Review.objects.filter(product=product, reviewer=reviewer).exists():
+        raise ObjectExistException("Review_Already_exist")
 
 
 def get_review(pk) -> Review:
