@@ -114,7 +114,6 @@ def delete_review(pk):
     try:
         review = get_review(pk)
         review.delete()
-        review.save()
         return True
     except Exception as e:
         raise e
