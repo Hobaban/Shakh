@@ -37,7 +37,6 @@ def delete_product(pk) -> bool:
     try:
         product = get_product(pk)
         product.delete()
-        product.save()
         return True
     except Exception as e:
         raise e
