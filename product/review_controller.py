@@ -55,6 +55,7 @@ def get_reviews_controller(request):
 @permission_classes((AllowAny,))
 def add_review_controller(request):
     title = request.data["title"]
+    # change if someone duplicate to review
     is_object_exist_409(models.Review, title=title)
     context = request.data["context"]
     product_key = request.data["product_key"]
