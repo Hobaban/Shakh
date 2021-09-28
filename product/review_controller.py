@@ -30,7 +30,7 @@ def update_review_controller(request, pk):
     rate = request.data["rate"]
     title = request.data["title"]
     update_review(pk=pk, context=context, title=title, product_key=product_key, reviewer_key=reviewer_key, rate=rate)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["DELETE"])
