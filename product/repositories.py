@@ -20,7 +20,7 @@ def create_product(name):
         product = Product()
         product.name = name
         product.save()
-        return Product
+        return product
     except Exception as e:
         return e
 
