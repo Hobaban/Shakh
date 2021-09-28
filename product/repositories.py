@@ -80,7 +80,7 @@ def create_review(title: str, rate: float, context: str, product_key: int, revie
 
 
 def update_review(pk: int, title: str, rate: float, context: str, product_key: int, reviewer_key: int) -> Review:
-    review = get_object_or_404(pk)
+    review = get_object_or_404(Review, id=pk)
     review.rate = rate
     review.context = context
     review.title = title
