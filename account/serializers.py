@@ -18,7 +18,6 @@ class PhoneValidationSerializer(serializers.ModelSerializer):
 
 
 class ForgePasswordSerializer(serializers.ModelSerializer):
-
     class Meta:
         phone = serializers.CharField(required=True)
         model = models.User
@@ -44,7 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ('username', 'first_name', 'last_name', 'phone', 'password', 'email')
+        fields = ('id', 'username', 'first_name', 'last_name', 'phone', 'password', 'email')
 
     def validate(self, data):
         password = data.get('password')
