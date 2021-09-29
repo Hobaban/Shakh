@@ -90,7 +90,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',
     'rest_framework',
     'account.apps.AccountConfig',
     'product.apps.ProductConfig'
