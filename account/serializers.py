@@ -36,14 +36,21 @@ class EmailLoginSerializer(serializers.ModelSerializer):
         fields = ('email', 'password')
 
 
+class UserImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserImage
+        fields = ('image', 'user',)
+
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    user_images = UserImageSerializer(many=True, read_only=True)
 
     # token = serializers.CharField(required=True)
 
     class Meta:
         model = models.User
-        fields = ('id', 'username', 'first_name', 'last_name', 'phone', 'password', 'email')
+        fields = ('id', 'username', 'first_name', 'last_name', 'phone', 'password', 'email', 'user_images')
 
     def validate(self, data):
         password = data.get('password')
