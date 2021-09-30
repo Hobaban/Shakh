@@ -2,13 +2,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
-from product import models
 from product.repositories import get_review, update_review, delete_review, create_review, add_review_image, \
     get_reviews_per_product, is_product_reviewed
 from product.serializers import ReviewSerializer, ReviewImageSerializer
 from util.pagination import Paginator
-from util.query import is_object_exist_409
 
 
 @api_view(["GET"])
