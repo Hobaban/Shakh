@@ -15,7 +15,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ('id', 'name', 'product_images')
+        fields = ('id', 'name', 'product_images', 'rate')
 
 
 class ReviewImageSerializer(serializers.ModelSerializer):
