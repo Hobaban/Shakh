@@ -80,6 +80,20 @@ def phone_registration(request):
     return Response({'message': "wrong code"}, status=status.HTTP_403_FORBIDDEN)
 
 
+@api_view(["PUT"])
+@permission_classes((AllowAny,))
+def complete_profile(request):
+    user = request.user
+    user = get_object_or_404(User, id=user.id)
+    first_name = request.data["first_name"]
+    last_name = request.data["last_name"]
+    user.first_name = first_name
+    user.last_name = last_name
+    user.save()
+    serializer = UserSerializer(user)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def email_registration(request):

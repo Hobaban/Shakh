@@ -5,3 +5,10 @@ IPYTHONDIR=/app/.ipython
 # Redis
 # ------------------------------------------------------------------------------
 REDIS_URL=redis://redis:6379/0
+# SMS
+# ------------------------------------------------------------------------------
+user_api_key=4a68b9cb205b9eda61feb9cb
+secret_key=123Amirlesani1368!@#
+sms_timeout=1500
+sms_token_url=https://RestfulSms.com/api/Token
+sms_verification_url=http://RestfulSms.com/api/VerificationCode
