@@ -2,7 +2,7 @@ from django.urls import path
 
 from product import views
 from product.review_controller import add_review_controller, get_reviews_controller, get_review_controller, \
-    update_review_controller, remove_review_controller, add_review_image_controller
+    update_review_controller, remove_review_controller, add_review_image_controller, get_current_user_stats
 from util.url import method_dispatch
 
 urlpatterns = [
@@ -22,6 +22,7 @@ urlpatterns = [
          method_dispatch(GET=get_review_controller, PUT=update_review_controller,
                          DELETE=remove_review_controller),
          name='review-detail'),
-    path('reviews/images/', method_dispatch(POST=add_review_image_controller), name='review-images')
+    path('reviews/images/', method_dispatch(POST=add_review_image_controller), name='review-images'),
+    path('user/stats/', method_dispatch(GET=get_current_user_stats), name='user-statics'),
 
 ]

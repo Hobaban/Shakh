@@ -1,10 +1,14 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
+from account.models import User
 from product.repositories import get_review, update_review, delete_review, create_review, add_review_image, \
     get_reviews_per_product, is_product_reviewed
-from product.serializers import ReviewSerializer, ReviewImageSerializer
+from product.serializers import ReviewSerializer, ReviewImageSerializer, UserStatSerializer
+from product.services import get_current_user_statistic
 from util.pagination import Paginator
 
 
@@ -14,6 +18,15 @@ def get_review_controller(request, pk):
     review = get_review(pk)
     serializer = ReviewSerializer(review)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_current_user_stats(request):
+    user = request.user
+    user = get_object_or_404(User, id=user.id)
+    stats = get_current_user_statistic(user.id)
+    return Response(data=stats, status=status.HTTP_200_OK)
 
 
 @api_view(["PUT"])
