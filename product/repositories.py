@@ -103,6 +103,22 @@ def get_reviews_per_product(product_id):
     return Review.objects.filter(product=product)
 
 
+def get_reviews_per_user(user_id):
+    user = get_object_or_404(User, id=user_id)
+    return Review.objects.filter(reviewer=user)
+
+
+def get_last_six_review_per_user(user_id):
+    user = get_object_or_404(User, id=user_id)
+    return Review.objects.filter(reviewer=user).order_by('-created_date')[:6]
+
+
+def get_user_review_count(user_id) -> int:
+    user = get_object_or_404(User, id=user_id)
+    review_count = Review.objects.filter(reviewer=user).count()
+    return review_count
+
+
 def is_product_reviewed(reviewer_id, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviewer = get_object_or_404(User, id=reviewer_id)
