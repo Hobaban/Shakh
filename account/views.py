@@ -74,11 +74,12 @@ def hello_world(request):
 @permission_classes((AllowAny,))
 def phone_registration(request):
     phone = request.data['phone']
+    username = request.data['username']
     password = request.data['password']
     otp_code = request.data['otp_code']
     is_object_exist_409(User, phone=phone)
     if check_otp_code(phone, otp_code):
-        models.User.objects.create_user(username=phone, phone=phone, password=password,
+        models.User.objects.create_user(username=username, phone=phone, password=password,
                                         email="fake@" + phone + ".com")
         return Response({'message': "registered"}, status=status.HTTP_201_CREATED)
     return Response({'message': "wrong code"}, status=status.HTTP_403_FORBIDDEN)
