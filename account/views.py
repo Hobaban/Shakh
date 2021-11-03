@@ -3,7 +3,7 @@ import logging
 from account import models
 from account.models import User
 from rest_framework import status
-from account.util import generate_otp_code, check_otp_code, is_code_sent, set_cache_multiple_value
+from account.util import generate_otp_code, check_otp_code, is_code_sent, set_cache_multiple_value, is_phone_number
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -51,9 +51,13 @@ def send_otp_code_view(request):
 @permission_classes((AllowAny,))
 def phone_login_view(request):
     LoginSerializer(data=request.data).is_valid()
-    phone = str(request.data['phone']).strip()
+    phone = request.data.get('phone')
     password = str(request.data['password']).strip()
-    user = get_object_or_404(models.User, phone=phone)
+    if is_phone_number(phone):
+        user = get_object_or_404(models.User, phone=phone)
+    else:
+        user = get_object_or_404(models.User, username=phone)
+
     if user.check_password(password):
         tokens = get_tokens(user)
         return Response({'tokens': tokens}, status=status.HTTP_201_CREATED)
