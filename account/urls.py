@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^phone_register/$', views.phone_registration, name='phone_register'),
     url(r'^current_user/$', views.get_current_user, name='current_user'),
     url(r'^complete_profile/$', views.complete_profile, name='complete_profile'),
+    url(r'^verify_phone/$', views.verify_token, name='verify_phone'),
     url(r'^hello/$', views.hello_world, name='hello_world')
     # decorator_include([api_view(["POST"]),permission_classes((AllowAny,))]
     # url(r'^email_login/$', views.email_login_view, name='login'),
