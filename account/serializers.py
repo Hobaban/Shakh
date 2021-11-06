@@ -6,12 +6,28 @@ from account.models import User
 
 
 class PhoneRegisterSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(required=True)
+    otp_code = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+    username = serializers.CharField(required=True)
+
     class Meta:
         model = models.User
-        fields = ('phone', 'otp_code', 'password')
+        fields = ('phone', 'otp_code', 'password', 'username')
+
+
+class VerifyTokenSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(required=True)
+    otp_code = serializers.CharField(required=True)
+
+    class Meta:
+        model = models.User
+        fields = ('phone', 'otp_code')
 
 
 class PhoneValidationSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(required=True)
+
     class Meta:
         model = models.User
         fields = ('phone',)

@@ -11,7 +11,7 @@ from account.services.service import get_tokens
 from util.query import is_object_exist_409
 from rest_framework.decorators import api_view, permission_classes
 from account.serializers import LoginSerializer, EmailLoginSerializer, PhoneValidationSerializer, UserSerializer, \
-    ForgePasswordSerializer
+    ForgePasswordSerializer, PhoneRegisterSerializer, VerifyTokenSerializer
 from send_message.send_message import SMS
 
 
@@ -31,7 +31,8 @@ def email_login_view(request):
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def verify_token(request):
-    print("verify phone called")
+    verify_serializer = VerifyTokenSerializer(data=request.data)
+    verify_serializer.is_valid(raise_exception=True)
     phone = request.data['phone']
     otp_code = request.data['otp_code']
     is_object_exist_409(User, phone=phone)
@@ -43,7 +44,8 @@ def verify_token(request):
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def send_otp_code_view(request):
-    PhoneValidationSerializer(data=request.data).is_valid()
+    phone_serializer = PhoneValidationSerializer(data=request.data)
+    phone_serializer.is_valid(raise_exception=True)
     phone = request.data["phone"]
     otp_code = generate_otp_code()
     if not is_code_sent(phone, 'otp_code'):
@@ -85,6 +87,8 @@ def hello_world(request):
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def phone_registration(request):
+    register_serializer = PhoneRegisterSerializer(data=request.data)
+    register_serializer.is_valid(raise_exception=True)
     phone = request.data['phone']
     username = request.data['username']
     password = request.data['password']
