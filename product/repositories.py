@@ -100,7 +100,7 @@ def get_reviews() -> [Review]:
 
 def get_reviews_per_product(product_id):
     product = get_object_or_404(Product, id=product_id)
-    return Review.objects.filter(product=product)
+    return Review.objects.filter(product=product).order_by('created_date')
 
 
 def get_reviews_per_user(user_id):
