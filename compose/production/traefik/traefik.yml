@@ -28,7 +28,7 @@ certificatesResolvers:
 http:
   routers:
     web-secure-router:
-      rule: "Host(`coddy.ir`) || Host(`www.coddy.ir`)"
+      rule: "Host(`xenups.ir`) || Host(`www.xenups.ir`)"
       entryPoints:
         - web-secure
       middlewares:
@@ -39,7 +39,7 @@ http:
         certResolver: letsencrypt
 
     flower-secure-router:
-      rule: "Host(`coddy.ir`)"
+      rule: "Host(`xenups.ir`)"
       entryPoints:
         - flower
       service: flower
