@@ -6,6 +6,14 @@ from django.core.cache import cache
 from django.utils.timezone import utc
 
 from util.redis_cache import get_cache_multiple_value
+import re
+
+
+def is_phone_number(input_data: str):
+    pattern = re.compile(r'\d+(?:,\d*)?')
+    if pattern.match(input_data):
+        return True
+    return False
 
 
 def check_otp_code(phone: int, otp_code: int, custom_value="otp_code") -> bool:

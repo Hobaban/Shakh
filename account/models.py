@@ -27,3 +27,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'user'
         verbose_name_plural = 'users'
+
+
+class UserImage(models.Model):
+    user = models.ForeignKey(User, related_name='user_images', on_delete=models.CASCADE, blank=True)
+    image = models.ImageField(upload_to="media", blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.username

@@ -1,7 +1,6 @@
 from django.core.cache import cache
 
 from account.models import User
-from account.util import get_time_difference
 from rest_framework_simplejwt.tokens import RefreshToken
 
 

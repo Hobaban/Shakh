@@ -6,19 +6,34 @@ from account.models import User
 
 
 class PhoneRegisterSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(required=True)
+    otp_code = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+    username = serializers.CharField(required=True)
+
     class Meta:
         model = models.User
-        fields = ('phone', 'otp_code', 'password')
+        fields = ('phone', 'otp_code', 'password', 'username')
+
+
+class VerifyTokenSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(required=True)
+    otp_code = serializers.CharField(required=True)
+
+    class Meta:
+        model = models.User
+        fields = ('phone', 'otp_code')
 
 
 class PhoneValidationSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField(required=True)
+
     class Meta:
         model = models.User
         fields = ('phone',)
 
 
 class ForgePasswordSerializer(serializers.ModelSerializer):
-
     class Meta:
         phone = serializers.CharField(required=True)
         model = models.User
@@ -37,14 +52,21 @@ class EmailLoginSerializer(serializers.ModelSerializer):
         fields = ('email', 'password')
 
 
+class UserImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserImage
+        fields = ('image', 'user',)
+
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    user_images = UserImageSerializer(many=True, read_only=True)
 
     # token = serializers.CharField(required=True)
 
     class Meta:
         model = models.User
-        fields = ('username', 'first_name', 'last_name', 'phone', 'password', 'email')
+        fields = ('id', 'username', 'first_name', 'last_name', 'phone', 'password', 'email', 'user_images')
 
     def validate(self, data):
         password = data.get('password')

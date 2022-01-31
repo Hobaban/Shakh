@@ -53,7 +53,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEBUG = True
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'arayeshi.herokuapp.com']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'xenups.ir', 'https://xenups.ir/', 'http://xenups.ir/']
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = ('account.backend.PhoneEmailUsernameBackend', 'django.contrib.auth.backends.ModelBackend')
 
@@ -90,7 +90,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',
     'rest_framework',
     'account.apps.AccountConfig',
     'product.apps.ProductConfig'
@@ -179,7 +178,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'statics')]
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = '/media/'
+MEDIA_URL = '/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 

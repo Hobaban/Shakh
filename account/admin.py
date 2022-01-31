@@ -2,7 +2,12 @@ from django.contrib import admin
 
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from account.models import User
+from account.models import User, UserImage
+
+
+class UserImageInline(admin.TabularInline):
+    model = UserImage
+    extra = 3
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -22,11 +27,12 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class CustomUserAdmin(UserAdmin):
+    inlines = [UserImageInline]
     readonly_fields = ["date_joined"]
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = User
-    list_display = ['phone', 'first_name', 'last_name', 'email', 'username']
+    list_display = ['id', 'phone', 'first_name', 'last_name', 'email', 'username']
 
 
 admin.site.register(User, CustomUserAdmin)

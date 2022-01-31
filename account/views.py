@@ -3,7 +3,7 @@ import logging
 from account import models
 from account.models import User
 from rest_framework import status
-from account.util import generate_otp_code, check_otp_code, is_code_sent, set_cache_multiple_value
+from account.util import generate_otp_code, check_otp_code, is_code_sent, set_cache_multiple_value, is_phone_number
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -11,7 +11,7 @@ from account.services.service import get_tokens
 from util.query import is_object_exist_409
 from rest_framework.decorators import api_view, permission_classes
 from account.serializers import LoginSerializer, EmailLoginSerializer, PhoneValidationSerializer, UserSerializer, \
-    ForgePasswordSerializer
+    ForgePasswordSerializer, PhoneRegisterSerializer, VerifyTokenSerializer
 from send_message.send_message import SMS
 
 
@@ -30,8 +30,22 @@ def email_login_view(request):
 
 @api_view(["POST"])
 @permission_classes((AllowAny,))
+def verify_token(request):
+    verify_serializer = VerifyTokenSerializer(data=request.data)
+    verify_serializer.is_valid(raise_exception=True)
+    phone = request.data['phone']
+    otp_code = request.data['otp_code']
+    is_object_exist_409(User, phone=phone)
+    if check_otp_code(phone, otp_code):
+        return Response({'message': "verified"}, status=status.HTTP_200_OK)
+    return Response({'message': "wrong code"}, status=status.HTTP_403_FORBIDDEN)
+
+
+@api_view(["POST"])
+@permission_classes((AllowAny,))
 def send_otp_code_view(request):
-    PhoneValidationSerializer(data=request.data).is_valid()
+    phone_serializer = PhoneValidationSerializer(data=request.data)
+    phone_serializer.is_valid(raise_exception=True)
     phone = request.data["phone"]
     otp_code = generate_otp_code()
     if not is_code_sent(phone, 'otp_code'):
@@ -51,9 +65,13 @@ def send_otp_code_view(request):
 @permission_classes((AllowAny,))
 def phone_login_view(request):
     LoginSerializer(data=request.data).is_valid()
-    phone = str(request.data['phone']).strip()
+    phone = request.data.get('phone')
     password = str(request.data['password']).strip()
-    user = get_object_or_404(models.User, phone=phone)
+    if is_phone_number(phone):
+        user = get_object_or_404(models.User, phone=phone)
+    else:
+        user = get_object_or_404(models.User, username=phone)
+
     if user.check_password(password):
         tokens = get_tokens(user)
         return Response({'tokens': tokens}, status=status.HTTP_201_CREATED)
@@ -69,15 +87,33 @@ def hello_world(request):
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def phone_registration(request):
+    register_serializer = PhoneRegisterSerializer(data=request.data)
+    register_serializer.is_valid(raise_exception=True)
     phone = request.data['phone']
+    username = request.data['username']
     password = request.data['password']
     otp_code = request.data['otp_code']
     is_object_exist_409(User, phone=phone)
+    is_object_exist_409(User, username=username)
     if check_otp_code(phone, otp_code):
-        models.User.objects.create_user(username=phone, phone=phone, password=password,
+        models.User.objects.create_user(username=username, phone=phone, password=password,
                                         email="fake@" + phone + ".com")
         return Response({'message': "registered"}, status=status.HTTP_201_CREATED)
     return Response({'message': "wrong code"}, status=status.HTTP_403_FORBIDDEN)
+
+
+@api_view(["PUT"])
+@permission_classes((AllowAny,))
+def complete_profile(request):
+    user = request.user
+    user = get_object_or_404(User, id=user.id)
+    first_name = request.data["first_name"]
+    last_name = request.data["last_name"]
+    user.first_name = first_name
+    user.last_name = last_name
+    user.save()
+    serializer = UserSerializer(user)
+    return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
