@@ -53,7 +53,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEBUG = True
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'arayeshi.herokuapp.com']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'xenups.ir', 'https://xenups.ir/', 'http://xenups.ir/']
 AUTH_USER_MODEL = 'account.User'
 AUTHENTICATION_BACKENDS = ('account.backend.PhoneEmailUsernameBackend', 'django.contrib.auth.backends.ModelBackend')
 
